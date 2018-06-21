@@ -14,83 +14,103 @@ using UnityEngine;
 
 public static class FileTool
 {
-     /// <summary>
-    /// 写入字符串到文件
+    /// <summary>
+    /// 以UTF8编码读取文件内容
     /// </summary>
-    /// <param name="fileName"></param>
-    /// <param name="contents"></param>
-    public static void WriteStringToFile(string fileName, string contents)
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public static string ReadAllText(string path)
     {
-        string dirctry = GetPrefix(fileName, '/');
-        if (!Directory.Exists(dirctry))
-        {
-            Directory.CreateDirectory(dirctry);
-        }
-        StreamWriter sWriter = null;
-        FileStream fileStream = null;
-        try
-        {
-            fileStream = new FileStream(fileName, FileMode.Create, FileAccess.ReadWrite,FileShare.None);
-            sWriter = new StreamWriter(fileStream);
-            sWriter.Write(contents);
-        }
-        finally
-        {
-            if (sWriter != null)
-            {
-                sWriter.Close();
-            }
-            if(fileStream != null)
-            {
-                fileStream.Close();
-            }
-        }
+        return ReadAllText(path, Encoding.UTF8);
     }
 
-    public static string ReadStringFromFile(string fileName,string encodeing = "utf-8")
+    /// <summary>
+    /// 读取文件内容
+    /// </summary>
+    public static string ReadAllText(string path,Encoding encoding)
     {
-        StreamReader sReader = null;
-        FileStream fileStream = null;
+        string text = "";
         try
         {
-            fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
-            sReader = new StreamReader(fileStream,Encoding.GetEncoding(encodeing));
-            return sReader.ReadToEnd();
+            text = File.ReadAllText(path,encoding);
         }
         catch (Exception e)
         {
-            Debug.Log(e.Message);
+            Debug.LogException(e);
         }
-        finally
-        {
-            if (sReader != null)
-            {
-                sReader.Close();
-            }
-            if(fileStream != null)
-            {
-                fileStream.Close();
-            }
-        }
-        return "";
+
+        return text;
     }
 
-    public static Texture2D ReadTextureFromFile(string fileName)
+    public static IEnumerator AsyncReadAllText(string path, Encoding encoding,Action<string> action)
     {
-        if (!System.IO.File.Exists(fileName))
+        using (WWW www = new WWW(path))
         {
-            Debug.LogError(fileName + "不存在！");
+            yield return www;
+            if (string.IsNullOrEmpty(www.error))
+            {
+                string text = encoding.GetString(www.bytes);
+                action(text);
+            }
+            else
+            {
+                Debug.LogError(www.error);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 写入文件,如果文件存在则覆盖,不存在则创建
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="contents"></param>
+    public static void WriteAllText(string path,string contents)
+    {
+        try
+        {
+            File.WriteAllText(path,contents);
+        }
+        catch (Exception e)
+        {
+            Debug.LogException(e);
+        }
+    }
+
+    /// <summary>
+    /// 读取贴图文件
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public static Texture2D ReadTextureFromFile(string path)
+    {
+        if (!System.IO.File.Exists(path))
+        {
+            Debug.LogError(path + "不存在！");
             return null;
         }
-        byte[] bytes = System.IO.File.ReadAllBytes(fileName);
+        byte[] bytes = System.IO.File.ReadAllBytes(path);
         Texture2D texture = new Texture2D(0, 0);
         texture.LoadImage(bytes);
         return texture;
     }
-	
-    static string GetPrefix(string source, char flag)
+
+    /// <summary>
+    /// 获取文件编码
+    /// </summary>
+    /// <param name="filename"></param>
+    /// <returns></returns>
+    public static Encoding GetEncoding(string filename)
     {
-        int position = source.LastIndexOf(flag);
-        return source.Remove(position);
+        var bom = new byte[4];
+        using (var file = new FileStream(filename, FileMode.Open, FileAccess.Read))
+        {
+            file.Read(bom, 0, 4);
+        }
+        if (bom[0] == 0x2b && bom[1] == 0x2f && bom[2] == 0x76) return Encoding.UTF7;
+        if (bom[0] == 0xef && bom[1] == 0xbb && bom[2] == 0xbf) return Encoding.UTF8;
+        if (bom[0] == 0xff && bom[1] == 0xfe) return Encoding.Unicode; //UTF-16LE
+        if (bom[0] == 0xfe && bom[1] == 0xff) return Encoding.BigEndianUnicode; //UTF-16BE
+        if (bom[0] == 0 && bom[1] == 0 && bom[2] == 0xfe && bom[3] == 0xff) return Encoding.UTF32;
+        return Encoding.ASCII;
     }
 }

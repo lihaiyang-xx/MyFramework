@@ -19,36 +19,7 @@ using UnityEditor;
 public static class Util
 {
 
-    public static int Int(object o)
-    {
-        return Convert.ToInt32(o);
-    }
-
-    public static float Float(object o)
-    {
-        return (float)Math.Round(Convert.ToSingle(o), 2);
-    }
-
-    public static long Long(object o)
-    {
-        return Convert.ToInt64(o);
-    }
-
-    public static int Random(int min, int max)
-    {
-        return UnityEngine.Random.Range(min, max);
-    }
-
-    public static float Random(float min, float max)
-    {
-        return UnityEngine.Random.Range(min, max);
-    }
-
-    public static string GetPostfix(string source,char flag)
-    {
-        int position = source.LastIndexOf(flag);
-        return source.Remove(0, position + 1);
-    }
+   
 
     
 
@@ -71,18 +42,7 @@ public static class Util
         return null;
     }
 
-    /// <summary>
-    /// 搜索子物体组件-Transform版
-    /// </summary>
-    public static T Get<T>(Transform go, string subnode) where T : Component
-    {
-        if (go != null)
-        {
-            Transform sub = go.Find(subnode);
-            if (sub != null) return sub.GetComponent<T>();
-        }
-        return null;
-    }
+
 
     /// <summary>
     /// 搜索子物体组件-Component版
@@ -92,30 +52,8 @@ public static class Util
         return go.transform.Find(subnode).GetComponent<T>();
     }
 
-    /// <summary>
-    /// 添加组件
-    /// </summary>
-    public static T Add<T>(GameObject go) where T : Component
-    {
-        if (go != null)
-        {
-            T[] ts = go.GetComponents<T>();
-            for (int i = 0; i < ts.Length; i++)
-            {
-                if (ts[i] != null) GameObject.Destroy(ts[i]);
-            }
-            return go.gameObject.AddComponent<T>();
-        }
-        return null;
-    }
+    
 
-    /// <summary>
-    /// 添加组件
-    /// </summary>
-    public static T Add<T>(Transform go) where T : Component
-    {
-        return Add<T>(go.gameObject);
-    }
 
     /// <summary>
     /// 扩展方法 查找所有父物体
@@ -130,33 +68,7 @@ public static class Util
         Transform t = null;
         return self.FindParents(parentName, out t);
     }
-    /// <summary>
-    /// 扩展方法 查找所有父物体
-    /// 若未找到，返回-1
-    /// 若找到，返回相隔层数（临近子物体于其父物体相隔1层）
-    /// outNearChild表示找到的父物体的与其相隔1层的子物体
-    /// </summary>
-    /// <param name="self"></param>
-    /// <param name="parentName"></param>
-    /// <param name="NearChild"></param>
-    /// <returns></returns>
-    public static int FindParents(this Transform self, string parentName, out Transform NearChild)
-    {
-        NearChild = null;
-        Transform t = self;
-        int level = 0;
-        while (t.parent != null)
-        {
-            level++;
-            t = t.parent;
-            if (t.name == parentName)
-            {
-                return level;
-            }
-            NearChild = t;
-        }
-        return -1;
-    }
+   
     public static int FindParents(this Transform self, Transform parent)
     {
         Transform t = null;
@@ -244,36 +156,11 @@ public static class Util
         //if (canVibrate == 1) iPhoneUtils.Vibrate();
     }
 
-    /// <summary>
-    /// Base64编码
-    /// </summary>
-    public static string Encode(string message)
-    {
-        byte[] bytes = Encoding.GetEncoding("utf-8").GetBytes(message);
-        return Convert.ToBase64String(bytes);
-    }
 
-    /// <summary>
-    /// Base64解码
-    /// </summary>
-    public static string Decode(string message)
-    {
-        byte[] bytes = Convert.FromBase64String(message);
-        return Encoding.GetEncoding("utf-8").GetString(bytes);
-    }
 
-    /// <summary>
-    /// 判断数字
-    /// </summary>
-    public static bool IsNumeric(string str)
-    {
-        if (str == null || str.Length == 0) return false;
-        for (int i = 0; i < str.Length; i++)
-        {
-            if (!Char.IsNumber(str[i])) { return false; }
-        }
-        return true;
-    }
+    
+
+ 
 
     /// <summary>
     /// HashToMD5Hex
@@ -296,50 +183,13 @@ public static class Util
     /// <summary>
     /// 清除所有子节点
     /// </summary>
-    public static void ClearChild(Transform go,bool immediate = false)
-    {
-        if (go == null) return;
-        for (int i = go.childCount - 1; i >= 0; i--)
-        {
-            if (immediate)
-            {
-                GameObject.DestroyImmediate(go.GetChild(i).gameObject);
-            }
-            else
-            {
-                GameObject.Destroy(go.GetChild(i).gameObject);
-            }
-        }
-    }
+  
 
 
-    /// <summary>
-    /// 清理内存
-    /// </summary>
-    public static void ClearMemory()
-    {
-        GC.Collect(); Resources.UnloadUnusedAssets();
-    }
 
-    /// <summary>
-    /// 是否为数字
-    /// </summary>
-    public static bool IsNumber(string strNumber)
-    {
-        Regex regex = new Regex("[^0-9]");
-        return !regex.IsMatch(strNumber);
-    }
 
-    /// <summary>
-    /// 取得行文本
-    /// </summary>
-    public static string GetFileText(string path)
-    {
-        #if UNITY_STANDALONE
-                        return File.ReadAllText(path);
-        #endif
-                return "";
-    }
+
+
 
     /// <summary>
     /// 网络可用
@@ -365,95 +215,7 @@ public static class Util
 
     
 
-    /// <summary>
-    /// 载入资源,首先从Resource目录载入资源,如果资源不存在
-    /// </summary>
-    /// <param name="name"></param>
-    /// <returns></returns>
-    public static UnityEngine.Object LoadAssets(string name)
-    {
-        UnityEngine.Object obj = Resources.Load(name);
-        if (obj != null)
-        {
-            return obj;
-        }
-        LogError(name + "not exist!");
-        return null;
-    }
-
-    /// <summary>
-    /// 从网络路径异步加载资源
-    /// </summary>
-    /// <param name="url"></param>
-    /// <returns></returns>
-    public static IEnumerator InstantiateFromUrl(string url)
-    {
-        using (WWW www = new WWW(url))
-        {
-            yield return www;
-            if (string.IsNullOrEmpty(www.error))
-            {
-                AssetBundle assetbundle = www.assetBundle;
-                string name = assetbundle.GetAllAssetNames()[0];
-                UnityEngine.Object obj = assetbundle.LoadAsset(name);
-                GameObject go = UnityEngine.Object.Instantiate(obj) as GameObject;
-                go.name = go.name.Replace("(Clone)","");
-                assetbundle.Unload(false);
-            }
-            else
-            {
-                Debug.LogError(www.error);
-            }
-        }
-            
-    }
-
-   public static IEnumerator LoadLevelFromUrl(string url,LoadSceneMode loadModel = LoadSceneMode.Single)
-    {
-        using (WWW www = new WWW(url))
-        {
-            yield return www;
-            if (string.IsNullOrEmpty(www.error))
-            {
-                AssetBundle assetbundle = www.assetBundle;
-                //assetbundle.LoadAllAssets();
-                string sceneName = url.Substring(url.LastIndexOf('/')+1).Replace(".unity3d","");
-                Debug.Log("即将加载场景：" + sceneName);
-                SceneManager.LoadScene(sceneName,loadModel);
-
-                yield return new WaitUntil(() =>
-                {
-                    return SceneManager.GetSceneByName(sceneName).isLoaded;
-                });
-                SceneManager.SetActiveScene(SceneManager.GetSceneByName(sceneName));
-                assetbundle.Unload(false);
-            }
-            else
-            {
-                Debug.LogError(www.error);
-            }
-        }
-    }
-
-    public static UnityEngine.GameObject Instantiate(string name, Transform parent = null)
-    {
-        UnityEngine.Object obj = LoadAssets(name);
-        if(obj != null)
-        {
-            return UnityEngine.Object.Instantiate(obj, parent) as GameObject;
-        }
-        return null;
-    }
-
-    public static UnityEngine.GameObject Instantiate(string name,Vector3 position,Quaternion rotation, Transform parent = null)
-    {
-        UnityEngine.Object obj = LoadAssets(name);
-        if (obj != null)
-        {
-            return UnityEngine.Object.Instantiate(obj, position, rotation, parent) as GameObject;
-        }
-        return null;
-    }
+    
 
 
     public static void Log(string str)
@@ -496,115 +258,13 @@ public static class Util
         get { return Application.streamingAssetsPath; }
     }
 
-    public static string GetLocalIP()
-    {
-        IPHostEntry ipe = Dns.GetHostEntry(Dns.GetHostName());
-        IPAddress ipAddr = ipe.AddressList.Where(_ip => _ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-        .First();
-        return ipAddr.ToString();
-    }
 
-    /// <summary>
-    /// 三点贝塞尔曲线
-    /// </summary>
-    /// <param name="P0"></param>
-    /// <param name="P1"></param>
-    /// <param name="P2"></param>
-    /// <param name="t"></param>
-    /// <returns></returns>
-    public static Vector3 BezierCurve(Vector3 P0, Vector3 P1, Vector3 P2, float t)
-    {
-        Vector3 B = Vector3.zero;
-        float t1 = (1 - t) * (1 - t);
-        float t2 = t * (1 - t);
-        float t3 = t * t;
-        B = P0 * t1 + 2 * t2 * P1 + t3 * P2;
-        return B;
-    }
-
-    public static GameObject[] FindGameobjects(string name)
-    {
-        List<GameObject> goList = new List<GameObject>();
-        Transform[] trs = GameObject.FindObjectsOfType<Transform>();
-        foreach(Transform tr in trs)
-        {
-            if(tr.name == name)
-            {
-                goList.Add(tr.gameObject);
-            }
-        }
-
-        return goList.ToArray();
-    }
-
-    /// <summary>
-    /// 从路径中读取图片
-    /// </summary>
-    /// <param name="image"></param>
-    /// <param name="path"></param>
-    public static  void LoadImage(Image image, string path)
-    {
-        Texture2D texture = new Texture2D(200, 200);
-        texture.LoadImage(File.ReadAllBytes(path));
-        image.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0, 0));
-    }
-    public static T[] Merge<T>(T[] arr, T[] other)
-    {
-        T[] buffer = new T[arr.Length + other.Length];
-        arr.CopyTo(buffer, 0);
-        other.CopyTo(buffer, arr.Length);
-        return buffer;
-    }
-
-    public class Event
-    {
-        public delegate void Handler(params object[] args);
-
-        public static void Listen(string message, Handler action)
-        {
-            var actions = listeners[message] as Handler;
-            if (actions != null)
-            {
-                listeners[message] = actions + action;
-            }
-            else
-            {
-                listeners[message] = action;
-            }
-        }
-
-        public static void Remove(string message, Handler action)
-        {
-            var actions = listeners[message] as Handler;
-            if (actions != null)
-            {
-                listeners[message] = actions - action;
-            }
-        }
-
-        public static void Clean(string message)
-        {
-            var actions = listeners[message] as Handler;
-            if(actions != null)
-            {
-                listeners[message] = null;
-            }
-        }
-
-        public static void Send(string message, params object[] args)
-        {
-            Debug.Log("广播消息：" + message);
-            var actions = listeners[message] as Handler;
-            if (actions != null)
-            {
-                actions(args);
-            }
-        }
+    
 
 
 
-        private static Hashtable listeners = new Hashtable();
-    }
+
+    
 
     
 }
