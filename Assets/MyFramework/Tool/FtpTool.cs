@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Net;
 using System.Text;
+using UnityEngine;
 
 public class FtpTool
 {
@@ -164,6 +165,7 @@ public class FtpTool
             Stream datastream = response.GetResponseStream();
             StreamReader sr = new StreamReader(datastream);
             result = sr.ReadToEnd();
+            Debug.Log(result);
             sr.Close();
             datastream.Close();
             response.Close();
@@ -196,6 +198,7 @@ public class FtpTool
             Stream datastream = response.GetResponseStream();
             StreamReader sr = new StreamReader(datastream);
             result = sr.ReadToEnd();
+            Debug.Log(result);
             sr.Close();
             datastream.Close();
             response.Close();
@@ -212,7 +215,6 @@ public class FtpTool
     /// <returns></returns>  
     public string[] GetFilesDetailList()
     {
-        string[] downloadFiles;
         try
         {
             StringBuilder result = new StringBuilder();
@@ -237,7 +239,6 @@ public class FtpTool
         }
         catch (Exception ex)
         {
-            downloadFiles = null;
             throw ex;
         }
     }
@@ -248,7 +249,6 @@ public class FtpTool
     /// <returns></returns>  
     public string[] GetFileList(string mask)
     {
-        string[] downloadFiles;
         StringBuilder result = new StringBuilder();
         FtpWebRequest reqFTP;
         try
@@ -287,7 +287,6 @@ public class FtpTool
         }
         catch (Exception ex)
         {
-            downloadFiles = null;
             throw ex;
         }
     }

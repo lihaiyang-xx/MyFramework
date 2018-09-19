@@ -402,7 +402,7 @@ public static class IOExtension
     public static void GetFileSystemEntries(string path,ref string[] paths)
     {
         string[] strs = Directory.GetFileSystemEntries(path);
-        paths = Util.Merge<string>(paths, strs);
+        paths = CollectionsTool.Merge<string>(paths, strs);
         foreach(string str in strs)
         {
             if(Directory.Exists(str))
