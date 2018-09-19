@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -14,9 +15,20 @@ public class NetworkTool
     // ReSharper disable once InconsistentNaming
     public static string GetLocalIP()
     {
-        IPHostEntry ipe = Dns.GetHostEntry(Dns.GetHostName());
-        IPAddress ipAddr = ipe.AddressList
-            .First(ip => ip.AddressFamily == AddressFamily.InterNetwork);
-        return ipAddr.ToString();
+        string localIP = string.Empty;
+        try
+        {
+            IPHostEntry ipe = Dns.GetHostEntry(Dns.GetHostName());
+            IPAddress ipAddr = ipe.AddressList
+                .FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork);
+            localIP = ipAddr.ToString();
+        }
+        catch (Exception e)
+        {
+            Debug.LogException(e);
+            localIP = string.Empty;
+        }
+        
+        return localIP;
     }
 }
