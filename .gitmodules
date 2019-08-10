@@ -1,0 +1,3 @@
+[submodule "Assets/MyFrameworkPure"]
+	path = Assets/MyFrameworkPure
+	url = git@github.com:lihaiyang-xx/MyFrameworkPure.git
